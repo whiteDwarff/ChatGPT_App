@@ -127,10 +127,22 @@ try {
       .post(body)
        .build();
 ```
-<br><br>
+<br>
 <hr>
 <br><br>
 
+> ### 6. HTTP 응답받기
+- HTTP 응답이 성공적으로 수신되었는지 확인
+- HTTP 응답을 문자열로 파싱하여 JSONObject로 변환 후 객체로 생성
+- 객체에서 'choice' 키에 해당하는 배열을 가져온다
+- 'choice' 배열에서 첫번째 요소인 'message' 객체를 가져온 뒤 'result' 변수에 저장
+- 'result'의 앞뒤 공백을 제거 후 반환 
+<br>
 <img width="1325" alt="ppt5" src="https://github.com/whiteDwarff/ChatGPT_App/assets/115057117/756cca97-eb52-4869-b17c-bb6e00df16a0">
+<br><br><br>
+<hr>
+<br><br>
+
+> ### 7. App 실행하기
 <img width="1325" alt="ppt6" src="https://github.com/whiteDwarff/ChatGPT_App/assets/115057117/b1d4443f-98f4-4444-a4c7-5f8e3a42c9d6">
 <img width="1325" alt="ppt7" src="https://github.com/whiteDwarff/ChatGPT_App/assets/115057117/a12334e6-bc66-4745-8e40-6c5cff060795">
