@@ -29,6 +29,8 @@
  OpenAI 홈페이지 : <a href="https://openai.com/">https://openai.com/</a>
 <img width="1325" alt="ppt2" src="https://github.com/whiteDwarff/ChatGPT_App/assets/115057117/00a36e9b-0361-4ddf-be50-923e88aa74d7">
 <br><br><br> 
+<hr>
+<br><br>
 
  > ### 3-1. OkHttp 라이브러리 추가
  ```ruby
@@ -54,8 +56,23 @@
 <br><br>
 
 > ### 3-2. 애플리케이션의 인터넷 연결 권한 설정
+```ruby
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+```
+<br>
+
+*__Manifests > AndroidManifest.xml 추가__*<br>
+
+- 애플리케이션이 인터넷에 접근할 수 있는 권한을 얻게 되며, 서버와 통신하거나 데이터를 주고받을 수 있음.<br>
 <img width="1324" alt="ppt3" src="https://github.com/whiteDwarff/ChatGPT_App/assets/115057117/7e8430ae-6166-4268-97a5-6ea56eabfe13">
+<br><br><br> 
+<hr>
+<br><br>
+
+
 <img width="1325" alt="ppt4" src="https://github.com/whiteDwarff/ChatGPT_App/assets/115057117/e9b1ff84-a3e5-4ad5-acef-5a0af5aa1222">
 <img width="1328" alt="ppt5" src="https://github.com/whiteDwarff/ChatGPT_App/assets/115057117/756cca97-eb52-4869-b17c-bb6e00df16a0">
 <img width="1325" alt="ppt6" src="https://github.com/whiteDwarff/ChatGPT_App/assets/115057117/b1d4443f-98f4-4444-a4c7-5f8e3a42c9d6">
