@@ -2,7 +2,7 @@
 
 ![header](https://capsule-render.vercel.app/api?type=waving&color=timeGradient&text=OpenAPI를%20사용하여%20Android%20App%20개발하기%20&animation=twinkling&fontSize=35&fontAlignY=40&fontAlign=70&height=250)
 
-![header](https://capsule-render.vercel.app/api?type=waving&color=timeGradient&text=OpenAPI를%20사용하여%20Android%20App%20개발하기&animation=twinkling&fontSize=35&fontAlignY=40&fontAlign=70&height=250)
+![header](https://capsule-render.vercel.app/api?type=waving&color=timeGradient&text=OpenAPI를%20사용하여%20Android%20App%20개발하기&animation=twinkling&fontSize=30&fontAlignY=40&fontAlign=70&height=250)
                          
 ChatGPT를 이용한 안드로이드 앱 개발
  <img src="https://img.shields.io/badge/AndroidStudio-3DDC84?style=flat&logo=android&logoColor=white"/>
