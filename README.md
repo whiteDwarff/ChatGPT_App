@@ -106,6 +106,7 @@ try {
 > ### 5. ChatGPT 모델을 사용하여 OpenAI API를 연결하기
 - 'model'을 'gpt-3.5-turbo'로 설정
 - arr이 object 객체를 문자열로 변환
+- object 객체를 문자열로 변환하고, JSON 형식으로 데이터를 전송
 - 요청이 전송될 url 설정
 - API에 요청을 보내기 위해 인증키 'MY_SECRET_KEY'를 사용하여 'Authorization' 헤더를 설정
   *(서버에게 클라이언트의 신원을 인증, 권한을 확인)*
@@ -125,7 +126,7 @@ try {
       .url("https://api.openai.com/v1/chat/completions")
       .header("Authorization", "Bearer "+ MY_SECRET_KEY)
       .post(body)
-       .build();
+      .build();
 ```
 <br>
 <hr>
