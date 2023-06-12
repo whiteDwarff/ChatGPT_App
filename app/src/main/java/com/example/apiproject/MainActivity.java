@@ -6,10 +6,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.ContentValues;
+import android.content.Intent;
+import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
@@ -26,6 +31,8 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import adapter.MessageAdapter;
+import dataActivity.DataActivity;
+import database.DatabaseHelper;
 import model.Message;
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -46,12 +53,12 @@ public class MainActivity extends AppCompatActivity {
     List<Message> messageList;
     MessageAdapter messageAdapter;
 
+    Button btnDataActivity;
+
     public static final MediaType JSON = MediaType.get("application/json; charset=utf-8");
-     OkHttpClient client;
+    OkHttpClient client;
 
-
-    private static final String MY_SECRET_KEY = "";
-
+    private static final String MY_SECRET_KEY = "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";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +66,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         setTitle("ChatGPT");
+
+        btnDataActivity = findViewById(R.id.btn_data_activity);
+        btnDataActivity.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // DataActivity로 화면 전환
+                Intent intent = new Intent(MainActivity.this, DataActivity.class);
+                startActivity(intent);
+            }
+        });
+
         ActionBar actionBar = getSupportActionBar();
         actionBar.setBackgroundDrawable(new ColorDrawable(Color.parseColor("#0aa379")));
 
@@ -87,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
         btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String question = et_msg.getText().toString().trim();
+                final String question = et_msg.getText().toString().trim();
                 addToChat(question, Message.SENT_BY_ME);
                 et_msg.setText("");
                 callAPI(question);
@@ -95,7 +113,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    void addToChat(String message, String sentBy){
+
+    void addToChat(String message, String sentBy) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -105,11 +124,29 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    void addResponse(String response){
-        messageList.remove(messageList.size()-1);
+
+    void addResponse(String response, String question) {
+        messageList.remove(messageList.size() - 1);
         addToChat(response, Message.SENT_BY_BOT);
+
+        if (response != null && !response.isEmpty()) {
+            // SQLite에 질문과 답변 저장
+            DatabaseHelper databaseHelper = new DatabaseHelper(MainActivity.this);
+            // 데이터베이스에 쓰기 권한을 추가하여 객체를 반환
+            SQLiteDatabase db = databaseHelper.getWritableDatabase();
+
+            // 데이터를 테이블에 삽입 또는 갱신할 때 사용되는 클래스, 해당 객체를 db에 저장
+            ContentValues answerValues = new ContentValues();
+            answerValues.put("question", question);  // 질문 내용 저장
+            answerValues.put("answer", response);  // 답변 저장
+
+            long answerRowId = db.insert("messages", null, answerValues);
+
+            db.close();
+        }
     }
-    void callAPI(String question){
+
+    void callAPI(String question) {
         messageList.add(new Message("...", Message.SENT_BY_BOT));
 
         // 대화 메시지를 담기위한 JSON 배열 생성, GPT와 user의 대화를 담는 객체를 생성
@@ -120,12 +157,12 @@ public class MainActivity extends AppCompatActivity {
             // GPT의 역할 설정, user의 응답을 받는다
             baseAi.put("role", "user");
             // GPT의 대화 모델 설정
-            baseAi.put("content",  "안녕하세요! 저는 도와주는 착한 AI Taddy Bear 입니다! 궁금한 거나 도움이 필요하면 언제든지 말해주세요!");
+            baseAi.put("content", "안녕하세요! 저는 도와주는 착한 AI Taddy Bear 입니다! 궁금한 거나 도움이 필요하면 언제든지 말해주세요!");
             // user의 질문, GPT에게 전달
             userMsg.put("role", "user");
             // GPT의 응답을 생성하고 반환
             userMsg.put("content", question);
-            //array로 담아서 한번에 보낸다
+            // array로 담아서 한번에 보낸다
             arr.put(baseAi);
             arr.put(userMsg);
         } catch (JSONException e) {
@@ -140,47 +177,45 @@ public class MainActivity extends AppCompatActivity {
             // 메시지들을 포함하는 JSON 배열을 설정
             object.put("messages", arr);
 
-        } catch (JSONException e){
+        } catch (JSONException e) {
             e.printStackTrace();
         }
         RequestBody body = RequestBody.create(object.toString(), JSON);
-        // reuquest 객체 생성
+        // request 객체 생성
         Request request = new Request.Builder()
                 // 요청이 전송될 url 설정
                 .url("https://api.openai.com/v1/chat/completions")
                 // Open Api 발급받은 key 넣어주기
-                .header("Authorization", "Bearer "+ MY_SECRET_KEY)
+                .header("Authorization", "Bearer " + MY_SECRET_KEY)
                 .post(body)
                 .build();
 
         client.newCall(request).enqueue(new Callback() {
             @Override
             public void onFailure(@NonNull Call call, @NonNull IOException e) {
-                addResponse("Failed to load response due to "+e.getMessage());
+                addResponse("Failed to load response due to " + e.getMessage(), question);
             }
 
             @Override
             public void onResponse(@NonNull Call call, @NonNull Response response) throws IOException {
                 // 서버의 응답이 성공적으로 도착했는지 확인
-                if(response.isSuccessful()){
-                    JSONObject jsonObject = null;
+                if (response.isSuccessful()) {
+                    String responseData = response.body().string();
                     try {
-                        // 서버에서 받은 응답 데이터를 JSON 형식으로 파싱 후 문자열로 받은 후 객체로 변환
-                        jsonObject = new JSONObject(response.body().string());
-                        // JSON 객체에서 "choice" 키에 해당하는 값을 가져옴(GPT의 답변)
-                        JSONArray jsonArray = jsonObject.getJSONArray("choices");
-                        String result = jsonArray.getJSONObject(0).getJSONObject("message").getString("content");
-                        // 답변의 앞, 뒤 공백을 제거 후 사용자에게 반환
-                        addResponse(result.trim());
-                    } catch (JSONException e){
-                        e.printStackTrace();
+                        // JSON 형태로 받은 응답 데이터를 분석
+                        JSONObject json = new JSONObject(responseData);
+                        JSONArray choices = json.getJSONArray("choices");
+                        JSONObject chatAI = choices.getJSONObject(0);
+                        JSONObject message = chatAI.getJSONObject("message");
+                        String content = message.getString("content").replaceAll("<.*?>", "");
+                        addResponse(content, question);
+                    } catch (JSONException e) {
+                        addResponse("Failed to parse response due to " + e.getMessage(), question);
                     }
                 } else {
-                    addResponse("Failed to load response due to "+response.body().string());
+                    addResponse("Response was not successful. Error code: " + response.code(), question);
                 }
             }
         });
-
     }
 }
-
