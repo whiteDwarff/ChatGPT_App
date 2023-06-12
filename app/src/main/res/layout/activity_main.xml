@@ -53,4 +53,10 @@
 
     </RelativeLayout>
 
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="질문목록"
+        android:id="@+id/btn_data_activity"></Button>
+
 </RelativeLayout>
